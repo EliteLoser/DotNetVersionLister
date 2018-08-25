@@ -11,14 +11,18 @@
 # 2.2.4: Corrected a flaw/bug and added support also for .NET 4.6.2 on
 #        windows 10 Anniversary Update. Based on feedback from Byron Wright.
 #        He had this issue with a Server 2016 server.
+# 2.2.5: Add support for .NET 4.7.2.
+# 2.2.5.1: Fix issues in psd1 that prevented correct import of module
+#         (wtf... sigh). Ignoring pull req because of indentation issues (tabs??)
+#         Sorry about the mess.
 
 @{
 
 # Script module or binary module file associated with this manifest.
-# RootModule = ''
+RootModule = 'DotNetVersionLister.psm1'
 
 # Version number of this module.
-ModuleVersion = '2.2.5'
+ModuleVersion = '2.2.5.1'
 
 # Supported PSEditions
 # CompatiblePSEditions = @()
@@ -101,7 +105,7 @@ PrivateData = @{
     PSData = @{
 
         # Tags applied to this module. These help with module discovery in online galleries.
-        Tags = '.NET','Version','DotNet'
+        Tags = '.NET', 'Version', 'DotNet'
 
         # A URL to the license for this module.
         # LicenseUri = ''
@@ -113,7 +117,7 @@ PrivateData = @{
         # IconUri = ''
 
         # ReleaseNotes of this module
-        ReleaseNotes = '* Add support for .NET version 4.7.2 (all eligible Windows versions included).'
+        ReleaseNotes = '* Fix issues in psd1 preventing correct import of the module'
 
         # External dependent modules of this module
         # ExternalModuleDependencies = ''
