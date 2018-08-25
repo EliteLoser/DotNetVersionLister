@@ -12,9 +12,9 @@
 #        windows 10 Anniversary Update. Based on feedback from Byron Wright.
 #        He had this issue with a Server 2016 server.
 # 2.2.5: Add support for .NET 4.7.2.
-# 2.2.5.1: Fix issues in psd1 that prevented correct import of module
+# 2.2.5.2: Fix issues in psd1 that prevented correct import of module
 #         (wtf... sigh). Ignoring pull req because of indentation issues (tabs??)
-#         Sorry about the mess.
+#         Sorry about the mess. And fix version issue with PS gallery, argh. omg.
 
 @{
 
@@ -22,7 +22,7 @@
 RootModule = 'DotNetVersionLister.psm1'
 
 # Version number of this module.
-ModuleVersion = '2.2.5.1'
+ModuleVersion = '2.2.5.2'
 
 # Supported PSEditions
 # CompatiblePSEditions = @()
@@ -117,7 +117,7 @@ PrivateData = @{
         # IconUri = ''
 
         # ReleaseNotes of this module
-        ReleaseNotes = '* Fix issues in psd1 preventing correct import of the module'
+        ReleaseNotes = '* Fix issues in psd1 preventing correct import of the module (and fix version, omg).'
 
         # External dependent modules of this module
         # ExternalModuleDependencies = ''
@@ -133,4 +133,3 @@ PrivateData = @{
 # DefaultCommandPrefix = ''
 
 }
-
