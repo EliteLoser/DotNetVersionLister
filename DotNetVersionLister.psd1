@@ -15,6 +15,12 @@
 # 2.2.5.2: Fix issues in psd1 that prevented correct import of module
 #         (wtf... sigh). Ignoring pull req because of indentation issues (tabs??)
 #         Sorry about the mess. And fix version issue with PS gallery, argh. omg.
+# 2.2.6: Make the -LocalHost parameter optional and the default behaviour, as is normal
+#        in PowerShell. Can't think of a situation where it will break anything given
+#        the logic I used in the code combined with the change now: simply initializing
+#        the switch to true (_that_ is not best practices..). The rest of the logic
+#        should make this work seamlessly. Altered a comment/error message to reflect
+#        the change.
 
 @{
 
@@ -22,7 +28,7 @@
 RootModule = 'DotNetVersionLister.psm1'
 
 # Version number of this module.
-ModuleVersion = '2.2.5.2'
+ModuleVersion = '2.2.6'
 
 # Supported PSEditions
 # CompatiblePSEditions = @()
@@ -40,7 +46,7 @@ CompanyName = 'Svendsen Tech'
 Copyright = '(C) 2011 Svendsen Tech. Joakim Borger Svendsen. All rights reserved.'
 
 # Description of the functionality provided by this module
-Description = 'Use Svendsen Tech''s Get-DotNetVersion function to list installed .NET versions up to the last hard-coded, known "Release" registry key value. Online documentation here: http://www.powershelladmin.com/wiki/List_installed_.NET_versions_on_remote_computers GitHub here: '
+Description = 'Use Svendsen Tech''s Get-DotNetVersion function to list installed .NET versions up to the last hard-coded, known "Release" registry key value. GitHub here: https://github.com/EliteLoser/DotNetVersionLister/ - Online blog documentation here: https://www.powershelladmin.com/wiki/List_installed_.NET_versions_on_remote_computers'
 
 # Minimum version of the Windows PowerShell engine required by this module
 PowerShellVersion = '2.0'
@@ -117,7 +123,7 @@ PrivateData = @{
         # IconUri = ''
 
         # ReleaseNotes of this module
-        ReleaseNotes = '* Fix issues in psd1 preventing correct import of the module (and fix version, omg).'
+        ReleaseNotes = '* Make the -LocalHost parameter optional and the default behaviour to conform more to best practices (on the surface).'
 
         # External dependent modules of this module
         # ExternalModuleDependencies = ''
