@@ -1,31 +1,42 @@
 function Get-DotNetVersion {
     <#
     .SYNOPSIS
-        Get installed .NET versions from remote computers. Hardcoded .NET versions so the script will
-        need to be updated when new versions are released.
+        Get installed .NET versions from the local host or remote computers. Hardcoded .NET versions,
+        so the script will need to be updated when new versions are released.
                 
     .DESCRIPTION
         Uses remote registry access or PSRemoting.
     
-        Online documenation here:
-        http://www.powershelladmin.com/wiki/List_installed_.NET_versions_on_remote_computers
+        GitHub here: https://github.com/EliteLoser/DotNetVersionLister
+
+        Online blog documentation here:
+        https://www.powershelladmin.com/wiki/List_installed_.NET_versions_on_remote_computers
         
     .PARAMETER ComputerName
         Target computers to retrieve .NET versions from via remote registry access or PSRemoting.
+    
     .PARAMETER PSRemoting
         Use PowerShell remoting instead of remote registry access. Remote registry access requires RPC,
         which in turn requires lots of firewall openings.
+    
     .PARAMETER ExportToCSV
         Export to a CSV file as well as files containing online and offline computers.
-    .PARAMETER ContinueOnPingFail
-        Try to gather even if the remote computer does not reply to ping.
-    .PARAMETER NoSummary
-        Do not display the end summary with Write-Host.
-    .PARAMETER LocalHost
-        Check the local computer. Cannot be used together with -ComputerName.
+    
     .PARAMETER Clobber
         Only in use with -ExportToCSV. Overwrite potentially existing files without prompting.
         Date and time is in the file name by default.
+    
+    .PARAMETER ContinueOnPingFail
+        Try to gather even if the remote computer does not reply to ping.
+    
+    .PARAMETER NoSummary
+        Do not display the end summary with Write-Host.
+    
+    .PARAMETER LocalHost
+        Check the local computer. Cannot be used together with -ComputerName.
+        As of version 2.2.6 of DotNetVersionLister, this parameter is optional and the
+        default behaviour of the Get-DotNetVersion command, as is normal in PowerShell.
+    
     .EXAMPLE
         Get-DotNetVersion adminsrv1 -Verbose -nos
         VERBOSE: Script start time: 02/09/2017 13:28:44
@@ -64,13 +75,13 @@ function Get-DotNetVersion {
     #>
     [CmdletBinding()]
     param(
-        [Alias('Cn', 'PSComputerName')][string[]] $ComputerName = @(), # not mandatory, not feeling the parameter set love..
-        [switch] $PSRemoting,
-        [switch] $ExportToCSV,
-        [switch] $ContinueOnPingFail,
-        [switch] $NoSummary,
-        [switch] $LocalHost, # tacking/hacking on this too
-        [switch] $Clobber,
+        [Alias('Cn', 'PSComputerName')][System.String[]] $ComputerName = @(), # not mandatory, not feeling the parameter set love here.
+        [Switch] $PSRemoting,
+        [Switch] $ExportToCSV,
+        [Switch] $ContinueOnPingFail,
+        [Switch] $NoSummary,
+        [Switch] $LocalHost = $True, # tacking/hacking on this too
+        [Switch] $Clobber,
         [PSCredential] $Credential)
     ## Author: Joakim Svendsen
     ## Copyright (C) 2011, Joakim Svendsen
@@ -84,21 +95,35 @@ function Get-DotNetVersion {
     #                    Lots of small changes and improvements. Properly closing and disposing registry objects.
     #                    Added a [gc]::Collect() in the end block.
     # 2017-04-20: v1.6 - Removed the Dispose() calls that caused errors.
-    begin {
+    # ----- forgot to comment ---
+    # 2018-12-26: v2.2.6 - Up to .NET 4.7.2 is supported in this version. The change is making the -LocalHost
+    #                      parameter optional.
+    
+    Begin {
+        
         #Set-StrictMode -Version Latest
+        
         $MyEAP = 'Stop'
+        
         $ErrorActionPreference = $MyEAP
-        $StartTime = [datetime]::Now
+        
+        $StartTime = Get-Date
+        
         if ($PSRemoting -and $LocalHost) {
             Write-Error -Message "You can't use both the PSRemoting and LocalHost parameter at the same time." -ErrorAction Stop
         }
+        
         if (-not $LocalHost -and $ComputerName.Count -eq 0) {
-            Write-Error -Message "You need to specify a computer name or -LocalHost." -ErrorAction Stop
+            Write-Error -Message "You need to specify a computer name or -LocalHost cannot be set to a false value." -ErrorAction Stop
         }
+        
         if ($LocalHost) {
             $ComputerName = @('localhost')
         }
+        
         Write-Verbose -Message "Script start time: $StartTime" #-Verbose
+        
+        # "Legacy" support for this parameter.
         if ($ExportToCSV) {
             $Date = $StartTime.ToString('yyyy-MM-dd_HH.mm')
             $OutputOnlineFile  = ".\DotNetOnline-${Date}.txt"
@@ -300,12 +325,13 @@ function Get-DotNetVersion {
         $DotNetData.GetEnumerator() | Sort-Object -Property Name | ForEach-Object {
             $c = $_.Name
             $_.Value | Select-Object -Property $CsvHeaders
-        } | Select-Object @{n='ComputerName';e={$c}}, * # pass to pipeline instead #| Export-Csv -Encoding UTF8 -LiteralPath $CsvOutputFile
+        } | Select-Object @{ Name = 'ComputerName'; Expression = { $c } }, * # pass to pipeline instead 
+        #| Export-Csv -Encoding UTF8 -LiteralPath $CsvOutputFile
         if ($ExportToCSV) {
             $DotNetData.GetEnumerator() | Sort-Object -Property Name | ForEach-Object {
                 $c = $_.Name
                 $_.Value | Select-Object -Property $CsvHeaders
-            } | Select-Object @{n='ComputerName';e={$c}}, * | Export-Csv -Encoding UTF8 -LiteralPath $CsvOutputFile
+            } | Select-Object @{ Name = 'ComputerName'; Expression ={ $c } }, * | Export-Csv -Encoding UTF8 -LiteralPath $CsvOutputFile
         }
         [gc]::Collect()
         if (-not $NoSummary) {
