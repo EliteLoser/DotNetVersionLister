@@ -113,6 +113,11 @@ function Get-DotNetVersion {
             Write-Error -Message "You can't use both the PSRemoting and LocalHost parameter at the same time." -ErrorAction Stop
         }
         
+        if ($ComputerName.Count -gt 0 -and $LocalHost) {
+            Write-Verbose -Message "Using specified computer names."
+            $LocalHost = $False
+        }
+
         if (-not $LocalHost -and $ComputerName.Count -eq 0) {
             Write-Error -Message "You need to specify a computer name or -LocalHost cannot be set to a false value." -ErrorAction Stop
         }
