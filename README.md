@@ -5,7 +5,7 @@ As of 2018-12-26 versions up to .NET 4.7.2 are supported/detected.
 
 Blog documentation (I'm too lazy to duplicate here): https://www.powershelladmin.com/wiki/List_installed_.NET_versions_on_remote_computers 
 
-It's published to the PowerShell Gallery, so you can install/inspect/download with `Install-Module`, `Find-Module` and `Save-Module`.
+It's published to the PowerShell Gallery, so you can install/inspect/download with `Install-Module`, `Find-Module` and `Save-Module`. Link: https://www.powershellgallery.com/packages/DotNetVersionLister/ 
 
 Example installation for your user only:
 
@@ -24,7 +24,7 @@ and
 Example output:
 
 ```
-Get-DotNetVersion
+Get-DotNetVersion -NoSummary
 
 
 ComputerName : localhost
