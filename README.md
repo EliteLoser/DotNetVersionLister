@@ -21,6 +21,10 @@ and
 
 `Get-STDotNetVersion -ComputerName server1, server2, server3`.
 
+or
+
+`Get-STDotNetVersion -ComputerName server1, server2, server3 -PSRemoting`.
+
 Example output:
 
 ```
