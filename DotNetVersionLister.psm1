@@ -1,4 +1,4 @@
-function Get-DotNetVersion {
+function Get-STDotNetVersion {
     <#
     .SYNOPSIS
         Get installed .NET versions from the local host or remote computers. Hardcoded .NET versions,
@@ -98,7 +98,15 @@ function Get-DotNetVersion {
     # ----- forgot to comment ---
     # 2018-12-26: v2.2.6 - Up to .NET 4.7.2 is supported in this version. The change is making the -LocalHost
     #                      parameter optional.
-    
+    # 2019-01-30: v2.2.7 - Make sure you can pass -PSRemoting and -ComputerName without having to work
+    #                      around my idiocy and lack of testing by passing -Localhost:$False - like I found
+    #                      myself doing when actually testing the module against remote targets (that is not
+    #                      so conveniently done the way I currently work... sigh, sorry).
+    # v3.0 - The 2.2.7 version is skipped and I'm adding a new function name that's Get-STDotNetVersion, but
+    #       to keep it backwards compatible, I will add some quite offensive logic to alias this to
+    #       "Get-DotNetVersion", but only if the command does not already exist in the session.
+    #       Fingers crossed I get the logic right on the first try this time, I promise to test. :)
+
     Begin {
         
         #Set-StrictMode -Version Latest
@@ -109,13 +117,13 @@ function Get-DotNetVersion {
         
         $StartTime = Get-Date
         
-        if ($PSRemoting -and $LocalHost) {
-            Write-Error -Message "You can't use both the PSRemoting and LocalHost parameter at the same time." -ErrorAction Stop
-        }
-        
         if ($ComputerName.Count -gt 0 -and $LocalHost) {
             Write-Verbose -Message "Using specified computer names."
             $LocalHost = $False
+        }
+
+        if ($PSRemoting -and $LocalHost) {
+            Write-Error -Message "You can't use both the PSRemoting and LocalHost parameter at the same time." -ErrorAction Stop
         }
 
         if (-not $LocalHost -and $ComputerName.Count -eq 0) {
@@ -349,4 +357,15 @@ function Get-DotNetVersion {
 "@
         }
     }
+}
+
+if (-not (Get-Command -Name Get-DotNetVersion -ErrorAction SilentlyContinue)) {
+
+    Write-Verbose ("As of version 3.x (and higher) of the module, the function name is 'Get-STDotNetVersion' to " + `
+        "avoid function name collisions. However, this PowerShell session did not have a 'Get-DotNetVersion' command in use," + `
+        "so to preserve backwards-compatibility, the alias 'Get-DotNetVersion' now points to the function 'Get-STDotNetVersion'.")
+
+    New-Alias -Name Get-DotNetVersion -Value Get-STDotNetVersion `
+        -Description "Backwards compatibility alias for 'Get-STDotNetVersion'." -ErrorAction Continue
+
 }
