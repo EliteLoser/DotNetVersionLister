@@ -111,7 +111,7 @@ AliasesToExport = @()
 # ModuleList = @()
 
 # List of all files packaged with this module
-FileList = @("Get-DotNetVersion.psm1", "Get-DotNetVersion.psd1")
+FileList = @("DotNetVersionLister.psm1", "DotNetVersionLister.psd1")
 
 # Private data to pass to the module specified in RootModule/ModuleToProcess. This may also contain a PSData hashtable with additional module metadata used by PowerShell.
 PrivateData = @{
