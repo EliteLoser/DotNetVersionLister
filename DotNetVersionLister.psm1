@@ -366,6 +366,7 @@ if (-not (Get-Command -Name Get-DotNetVersion -ErrorAction SilentlyContinue)) {
         "so to preserve backwards-compatibility, the alias 'Get-DotNetVersion' now points to the function 'Get-STDotNetVersion'.")
 
     New-Alias -Name Get-DotNetVersion -Value Get-STDotNetVersion `
-        -Description "Backwards compatibility alias for 'Get-STDotNetVersion'." -ErrorAction Continue
+        -Description "Backwards compatibility alias for 'Get-STDotNetVersion'." -ErrorAction Continue `
+        -Scope Global
 
 }
