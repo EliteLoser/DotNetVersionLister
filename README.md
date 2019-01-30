@@ -1,7 +1,7 @@
 # DotNetVersionLister
-Get a list of installed .NET versions on (remote) Windows computers
+Get a list of installed .NET versions on (remote) Windows computers.
 
-As of 2018-12-26 versions up to .NET 4.7.2 are supported/detected. It's based on the information in this article: https://docs.microsoft.com/en-us/dotnet/framework/migration-guide/how-to-determine-which-versions-are-installed
+As of 2019-01-30 versions up to .NET 4.7.2 are supported/detected. It's based on the information in this article: https://docs.microsoft.com/en-us/dotnet/framework/migration-guide/how-to-determine-which-versions-are-installed
 
 Blog documentation (I'm too lazy to duplicate here): https://www.powershelladmin.com/wiki/List_installed_.NET_versions_on_remote_computers 
 
@@ -15,16 +15,20 @@ Install-Module -Name DotNetVersionLister -Scope CurrentUser #-Force
 
 Example use:
 
-`Get-DotNetVersion`
+`Get-STDotNetVersion`
 
 and
 
-`Get-DotNetVersion -ComputerName server1, server2, server3`.
+`Get-STDotNetVersion -ComputerName server1, server2, server3`
+
+or
+
+`Get-STDotNetVersion -ComputerName server1, server2, server3 -PSRemoting`
 
 Example output:
 
 ```
-Get-DotNetVersion -NoSummary
+Get-STDotNetVersion -NoSummary
 
 
 ComputerName : localhost
@@ -38,3 +42,7 @@ v1.1.4322    : Not installed (no key)
 Ping         : True
 Error        : 
 ```
+
+# Notes
+
+The command/function name used to be `Get-DotNetVersion` in versions before v3 of the module. This is aliased if the command does not currently exist in the PowerShell session, but you have to either run `Get-STDotNetVersion` first to load it, as auto-load for `Get-DotNetVersion` does not work - or you can simply `Import-Module -Name DotNetVersionLister` first, as we had to on PowerShell v2.

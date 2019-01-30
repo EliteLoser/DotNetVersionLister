@@ -21,6 +21,14 @@
 #        the switch to true (_that_ is not best practices..). The rest of the logic
 #        should make this work seamlessly. Altered a comment/error message to reflect
 #        the change.
+# v2.2.7: Make sure you can pass -PSRemoting and -ComputerName without having to work
+#         around my idiocy and lack of testing by passing -Localhost:$False - like I found
+#         myself doing when actually testing the module against remote targets (that is not
+#         so conveniently done the way I currently work... sigh, sorry).
+# v3.0: 2.2.7 is skipped and I'm adding a new function name that's Get-STDotNetVersion, but
+#       to keep it backwards compatible, I will add some quite offensive logic to alias this to
+#       "Get-DotNetVersion", but only if the command does not already exist in the session.
+#       Fingers crossed I get the logic right, I promise to test. :)
 
 @{
 
@@ -28,7 +36,7 @@
 RootModule = 'DotNetVersionLister.psm1'
 
 # Version number of this module.
-ModuleVersion = '2.2.6'
+ModuleVersion = '3.0'
 
 # Supported PSEditions
 # CompatiblePSEditions = @()
@@ -43,7 +51,7 @@ Author = 'Joakim Borger Svendsen'
 CompanyName = 'Svendsen Tech'
 
 # Copyright statement for this module
-Copyright = '(C) 2011 Svendsen Tech. Joakim Borger Svendsen. All rights reserved.'
+Copyright = '(C) 2011-present Svendsen Tech. Joakim Borger Svendsen. All rights reserved.'
 
 # Description of the functionality provided by this module
 Description = 'Use Svendsen Tech''s Get-DotNetVersion function to list installed .NET versions up to the last hard-coded, known "Release" registry key value. GitHub here: https://github.com/EliteLoser/DotNetVersionLister/ - Online blog documentation here: https://www.powershelladmin.com/wiki/List_installed_.NET_versions_on_remote_computers'
@@ -85,7 +93,7 @@ PowerShellVersion = '2.0'
 # NestedModules = @()
 
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
-FunctionsToExport = 'Get-DotNetVersion'
+FunctionsToExport = 'Get-STDotNetVersion'
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
 CmdletsToExport = @()
@@ -103,7 +111,7 @@ AliasesToExport = @()
 # ModuleList = @()
 
 # List of all files packaged with this module
-# FileList = @()
+FileList = @("DotNetVersionLister.psm1", "DotNetVersionLister.psd1")
 
 # Private data to pass to the module specified in RootModule/ModuleToProcess. This may also contain a PSData hashtable with additional module metadata used by PowerShell.
 PrivateData = @{
@@ -114,16 +122,17 @@ PrivateData = @{
         Tags = '.NET', 'Version', 'DotNet'
 
         # A URL to the license for this module.
-        # LicenseUri = ''
+        LicenseUri = 'https://github.com/EliteLoser/DotNetVersionLister/blob/master/LICENSE'
 
         # A URL to the main website for this project.
-        # ProjectUri = ''
+        ProjectUri = 'https://github.com/EliteLoser/DotNetVersionLister'
 
         # A URL to an icon representing this module.
         # IconUri = ''
 
         # ReleaseNotes of this module
-        ReleaseNotes = '* Make the -LocalHost parameter optional and the default behaviour to conform more to best practices (on the surface).'
+        ReleaseNotes = '* Fix critical bug in parameter logic. With version 2.2.6 you need to specify -Localhost:$False' + `
+            ' if passing the parameter -PSRemoting and targeting remote computers. This is no longer a problem.'
 
         # External dependent modules of this module
         # ExternalModuleDependencies = ''
@@ -133,7 +142,7 @@ PrivateData = @{
  } # End of PrivateData hashtable
 
 # HelpInfo URI of this module
-# HelpInfoURI = ''
+HelpInfoURI = 'https://github.com/EliteLoser/DotNetVersionLister'
 
 # Default prefix for commands exported from this module. Override the default prefix using Import-Module -Prefix.
 # DefaultCommandPrefix = ''
