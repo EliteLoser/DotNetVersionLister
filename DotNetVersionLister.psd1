@@ -5,30 +5,6 @@
 #
 # Generated on: 8/4/2018
 #
-# 2.2.1: Added -Credential.
-# 2.2.2: Added support for .NET 4.7
-# 2.2.3: Added support for .NET 4.7.1 
-# 2.2.4: Corrected a flaw/bug and added support also for .NET 4.6.2 on
-#        windows 10 Anniversary Update. Based on feedback from Byron Wright.
-#        He had this issue with a Server 2016 server.
-# 2.2.5: Add support for .NET 4.7.2.
-# 2.2.5.2: Fix issues in psd1 that prevented correct import of module
-#         (wtf... sigh). Ignoring pull req because of indentation issues (tabs??)
-#         Sorry about the mess. And fix version issue with PS gallery, argh. omg.
-# 2.2.6: Make the -LocalHost parameter optional and the default behaviour, as is normal
-#        in PowerShell. Can't think of a situation where it will break anything given
-#        the logic I used in the code combined with the change now: simply initializing
-#        the switch to true (_that_ is not best practices..). The rest of the logic
-#        should make this work seamlessly. Altered a comment/error message to reflect
-#        the change.
-# v2.2.7: Make sure you can pass -PSRemoting and -ComputerName without having to work
-#         around my idiocy and lack of testing by passing -Localhost:$False - like I found
-#         myself doing when actually testing the module against remote targets (that is not
-#         so conveniently done the way I currently work... sigh, sorry).
-# v3.0: 2.2.7 is skipped and I'm adding a new function name that's Get-STDotNetVersion, but
-#       to keep it backwards compatible, I will add some quite offensive logic to alias this to
-#       "Get-DotNetVersion", but only if the command does not already exist in the session.
-#       Fingers crossed I get the logic right, I promise to test. :)
 
 @{
 
@@ -36,7 +12,7 @@
 RootModule = 'DotNetVersionLister.psm1'
 
 # Version number of this module.
-ModuleVersion = '3.0'
+ModuleVersion = '3.0.1'
 
 # Supported PSEditions
 # CompatiblePSEditions = @()
@@ -131,9 +107,8 @@ PrivateData = @{
         # IconUri = ''
 
         # ReleaseNotes of this module
-        ReleaseNotes = '* Fix critical bug in parameter logic. With version 2.2.6 you need to specify -Localhost:$False' + `
-            ' if passing the parameter -PSRemoting and targeting remote computers. This is no longer a problem.'
-
+        ReleaseNotes = '* Add support for .NET Framework 4.8'
+        
         # External dependent modules of this module
         # ExternalModuleDependencies = ''
 
