@@ -226,8 +226,11 @@ function Get-STDotNetVersion {
             $RegKey = $null
             if ($RegKey = $Registry.OpenSubKey("SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full")) {
                 if ($DotNet4xRelease = [int] $RegKey.GetValue('Release')) {
-                    if ($DotNet4xRelease -ge 461808) {
-                        $DotNetData.$Computer | Add-Member -MemberType NoteProperty -Name '>=4.x' -Value '4.7.2 or later'
+                    if ($DotNet4xRelease -ge 528040) {
+                        $DotNetData.$Computer | Add-Member -MemberType NoteProperty -Name '>=4.x' -Value '4.8 or later'
+                    }
+                    elseif ($DotNet4xRelease -ge 461808) {
+                        $DotNetData.$Computer | Add-Member -MemberType NoteProperty -Name '>=4.x' -Value '4.7.2'
                     }
                     elseif ($DotNet4xRelease -ge 461308) {
                         $DotNetData.$Computer | Add-Member -MemberType NoteProperty -Name '>=4.x' -Value '4.7.1'
