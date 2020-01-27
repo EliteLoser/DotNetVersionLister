@@ -30,7 +30,7 @@ CompanyName = 'Svendsen Tech'
 Copyright = '(C) 2011-present Svendsen Tech. Joakim Borger Svendsen. All rights reserved.'
 
 # Description of the functionality provided by this module
-Description = 'Use Svendsen Tech''s Get-DotNetVersion function to list installed .NET versions up to the last hard-coded, known "Release" registry key value. GitHub here: https://github.com/EliteLoser/DotNetVersionLister/ - Online blog documentation here: https://www.powershelladmin.com/wiki/List_installed_.NET_versions_on_remote_computers'
+Description = 'Use Svendsen Tech''s Get-STDotNetVersion function to list installed .NET versions up to the last hard-coded, known "Release" registry key value. GitHub here: https://github.com/EliteLoser/DotNetVersionLister/ - Online blog documentation here: https://www.powershelladmin.com/wiki/List_installed_.NET_versions_on_remote_computers'
 
 # Minimum version of the Windows PowerShell engine required by this module
 PowerShellVersion = '2.0'
