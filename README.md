@@ -48,3 +48,7 @@ Error        :
 The command/function name used to be `Get-DotNetVersion` in versions before v3 of the module. This is aliased if the command does not currently exist in the PowerShell session, but you have to either run `Get-STDotNetVersion` first to load it, as auto-load for `Get-DotNetVersion` does not work - or you can simply `Import-Module -Name DotNetVersionLister` first, as we had to on PowerShell v2.
 
 NB! Note made 2019-02-15: I got some issues with publishing right now, so the version in the PowerShell gallery is still 2.2.6. I will direct my mental energy in such a way that the module is eventually published when the energy patterns align. 2.2.6 uses `Get-DotNetVersion` not `Get-STDotNetVersion`, while the version you can `git clone` here is the new one.
+
+## Published at last
+
+At around 5 AM on a sleepless night January 27, 2020, the energy patterns aligned. The new v3.0.1 module is published. Let me know if I broke anything.
