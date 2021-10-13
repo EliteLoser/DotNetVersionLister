@@ -1,5 +1,5 @@
 # DotNetVersionLister
-Get a list of installed .NET versions on (remote) Windows computers.
+Get a list of installed .NET Framework versions on (remote) Windows computers.
 
 As of 2019-06-18 versions up to .NET 4.8 are supported/detected. It's based on the information in this article: https://docs.microsoft.com/en-us/dotnet/framework/migration-guide/how-to-determine-which-versions-are-installed
 
