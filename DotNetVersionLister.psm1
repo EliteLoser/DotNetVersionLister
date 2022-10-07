@@ -1,3 +1,39 @@
+function Get-DotNet4xVersion {
+    param (
+        [int]$BuildNumber
+    )
+    
+$versionTable = @{
+    378389	 = '.NET Framework 4.5'		
+    378675	 = '.NET Framework 4.5.1'	
+    379893	 = '.NET Framework 4.5.2'	
+    393295	 = '.NET Framework 4.6'	
+    394254	 = '.NET Framework 4.6.1'	
+    394802	 = '.NET Framework 4.6.2'	
+    460798	 = '.NET Framework 4.7'	
+    461308	 = '.NET Framework 4.7.1'	
+    461808	 = '.NET Framework 4.7.2'	
+    528040	 = '.NET Framework 4.8'		
+    533320	 = '.NET Framework 4.8.1'	
+}
+
+
+if ($versionTable.Keys -contains $BuildNumber)
+    { 
+        $versionTable[$BuildNumber]
+    }
+    else {
+        [int]$bestMatchBuild = $versionTable.Keys -le $BuildNumber | Measure-Object -Maximum | Select-Object -ExpandProperty Maximum
+        if ($bestMatchBuild -eq 0){
+            "Build number less than .Net Framework 4.5"
+        } else 
+        {
+            "{0}+" -f $versionTable[$bestMatchBuild]
+        }   
+    }
+}
+
+
 function Get-STDotNetVersion {
     <#
     .SYNOPSIS
@@ -214,6 +250,7 @@ function Get-STDotNetVersion {
                 }
             }
             # https://msdn.microsoft.com/en-us/library/hh925568 - for release numbers
+            # 2022-10-07: Refactored >=4.x section, introducing Get-DotNet4xVersion helper function and adding support for known frameworks up to 4.8.1
             # 2016-01-13: Adding 4.6.1.
             # 2016-10-10: Added 4.6.2. (rewrote parts earlier).
             # 2017-02-06: Changing to a switch statement as part of rewriting to a module/function and adding features.
@@ -226,39 +263,8 @@ function Get-STDotNetVersion {
             $RegKey = $null
             if ($RegKey = $Registry.OpenSubKey("SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full")) {
                 if ($DotNet4xRelease = [int] $RegKey.GetValue('Release')) {
-                    if ($DotNet4xRelease -ge 528040) {
-                        $DotNetData.$Computer | Add-Member -MemberType NoteProperty -Name '>=4.x' -Value '4.8 or later'
-                    }
-                    elseif ($DotNet4xRelease -ge 461808) {
-                        $DotNetData.$Computer | Add-Member -MemberType NoteProperty -Name '>=4.x' -Value '4.7.2'
-                    }
-                    elseif ($DotNet4xRelease -ge 461308) {
-                        $DotNetData.$Computer | Add-Member -MemberType NoteProperty -Name '>=4.x' -Value '4.7.1'
-                    }
-                    elseif ($DotNet4xRelease -ge 460798) {
-                        $DotNetData.$Computer | Add-Member -MemberType NoteProperty -Name '>=4.x' -Value '4.7'
-                    }
-                    elseif ($DotNet4xRelease -ge 394802) {
-                        $DotNetData.$Computer | Add-Member -MemberType NoteProperty -Name '>=4.x' -Value '4.6.2'
-                    }
-                    elseif ($DotNet4xRelease -ge 394254) {
-                        $DotNetData.$Computer | Add-Member -MemberType NoteProperty -Name '>=4.x' -Value '4.6.1'
-                    }
-                    elseif ($DotNet4xRelease -ge 393295) {
-                        $DotNetData.$Computer | Add-Member -MemberType NoteProperty -Name '>=4.x' -Value '4.6'
-                    }
-                    elseif ($DotNet4xRelease -ge 379893) {
-                        $DotNetData.$Computer | Add-Member -MemberType NoteProperty -Name '>=4.x' -Value '4.5.2'
-                    }
-                    elseif ($DotNet4xRelease -ge 378675) {
-                        $DotNetData.$Computer | Add-Member -MemberType NoteProperty -Name '>=4.x' -Value '4.5.1'
-                    }
-                    elseif ($DotNet4xRelease -ge 378389) {
-                        $DotNetData.$Computer | Add-Member -MemberType NoteProperty -Name '>=4.x' -Value '4.5'
-                    }
-                    else {
-                        $DotNetData.$Computer | Add-Member -MemberType NoteProperty -Name '>=4.x' -Value 'Universe imploded'
-                    }
+                        $DotNet4XName = Get-DotNet4xVersion -BuildNumber $DotNet4xRelease
+                        $DotNetData.$Computer | Add-Member -MemberType NoteProperty -Name '>=4.x' -Value $DotNet4XName
                 }
                 else {
                     $DotNetData.$Computer | Add-Member -MemberType NoteProperty -Name '>=4.x' -Value "Error (no 'Release' key?)"
