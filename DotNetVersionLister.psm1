@@ -2,34 +2,30 @@ function Get-DotNet4xVersion {
     param (
         [int]$BuildNumber
     )
-    
-$versionTable = @{
-    378389	 = '.NET Framework 4.5'		
-    378675	 = '.NET Framework 4.5.1'	
-    379893	 = '.NET Framework 4.5.2'	
-    393295	 = '.NET Framework 4.6'	
-    394254	 = '.NET Framework 4.6.1'	
-    394802	 = '.NET Framework 4.6.2'	
-    460798	 = '.NET Framework 4.7'	
-    461308	 = '.NET Framework 4.7.1'	
-    461808	 = '.NET Framework 4.7.2'	
-    528040	 = '.NET Framework 4.8'		
-    533320	 = '.NET Framework 4.8.1'	
-}
+    $VersionTable = @{
+        378389	 = '.NET Framework 4.5'		
+        378675	 = '.NET Framework 4.5.1'	
+        379893	 = '.NET Framework 4.5.2'	
+        393295	 = '.NET Framework 4.6'	
+        394254	 = '.NET Framework 4.6.1'	
+        394802	 = '.NET Framework 4.6.2'	
+        460798	 = '.NET Framework 4.7'	
+        461308	 = '.NET Framework 4.7.1'	
+        461808	 = '.NET Framework 4.7.2'	
+        528040	 = '.NET Framework 4.8'		
+        533320	 = '.NET Framework 4.8.1'	
+    }
 
-
-if ($versionTable.Keys -contains $BuildNumber)
-    { 
-        $versionTable[$BuildNumber]
+    if ($VersionTable.Keys -contains $BuildNumber) { 
+            $VersionTable[$BuildNumber]
     }
     else {
-        [int]$bestMatchBuild = $versionTable.Keys -le $BuildNumber | Measure-Object -Maximum | Select-Object -ExpandProperty Maximum
-        if ($bestMatchBuild -eq 0){
-            "Build number less than .Net Framework 4.5"
-        } else 
-        {
-            "{0}+" -f $versionTable[$bestMatchBuild]
-        }   
+        [int]$BestMatchBuild = $VersionTable.Keys -le $BuildNumber | Measure-Object -Maximum | Select-Object -ExpandProperty Maximum
+        if ($BestMatchBuild -eq 0) {
+            "Build number less than .NET Framework 4.5"
+        } else {
+            "{0}+" -f $VersionTable[$BestMatchBuild]
+        }
     }
 }
 
