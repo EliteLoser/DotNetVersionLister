@@ -107,11 +107,8 @@ PrivateData = @{
         # IconUri = ''
 
         # ReleaseNotes of this module
-        ReleaseNotes = '* v3.0.1. Finally publishing v3 to the gallery.
-* Pardon the out-of-sync publishing.
-* NB! Get-STDotNetVersion is the new main function name.
-* Detection of .NET version 4.8'
-        
+        ReleaseNotes = '* Detection of .NET version 4.8.1'
+       
         # External dependent modules of this module
         # ExternalModuleDependencies = ''
 
