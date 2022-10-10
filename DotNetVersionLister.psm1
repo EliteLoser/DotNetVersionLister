@@ -3,17 +3,17 @@ function Get-DotNet4xVersion {
         [int]$BuildNumber
     )
     $VersionTable = @{
-        378389	 = '.NET Framework 4.5'		
-        378675	 = '.NET Framework 4.5.1'	
-        379893	 = '.NET Framework 4.5.2'	
-        393295	 = '.NET Framework 4.6'	
-        394254	 = '.NET Framework 4.6.1'	
-        394802	 = '.NET Framework 4.6.2'	
-        460798	 = '.NET Framework 4.7'	
-        461308	 = '.NET Framework 4.7.1'	
-        461808	 = '.NET Framework 4.7.2'	
-        528040	 = '.NET Framework 4.8'		
-        533320	 = '.NET Framework 4.8.1'	
+        378389	 = '4.5'		
+        378675	 = '4.5.1'	
+        379893	 = '4.5.2'	
+        393295	 = '4.6'	
+        394254	 = '4.6.1'	
+        394802	 = '4.6.2'	
+        460798	 = '4.7'	
+        461308	 = '4.7.1'	
+        461808	 = '4.7.2'	
+        528040	 = '4.8'		
+        533320	 = '4.8.1'	
     }
 
     if ($VersionTable.Keys -contains $BuildNumber) { 
