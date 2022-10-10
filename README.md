@@ -7,6 +7,9 @@ Blog documentation (duplicating it here is tedious): https://www.powershelladmin
 
 It's published to the PowerShell Gallery, so you can install/inspect/download with `Install-Module`, `Find-Module` and `Save-Module`. Link: https://www.powershellgallery.com/packages/DotNetVersionLister/ 
 
+# New feature in October 2022
+Obs. As of 2022-10-11, I have not yet published the 3.1.x updates to the PowerShell Gallery. Thought maybe I would wait to see if there is any feedback (doubtful). In version 3.1.0 and up of the module, the build number is presented with a "+" trailing the version if it is not an exact match for a specific .NET Framework version. This increases the precision of the script as it formerly did not distinguish a higher build than the exact .NET Framework version.
+
 Example installation for your user only:
 
 ```
