@@ -1,7 +1,7 @@
 # DotNetVersionLister
 Get a list of installed .NET Framework versions on (remote) Windows computers.
 
-As of 2019-06-18 versions up to .NET 4.8.1 are supported/detected. It's based on the information in this article: https://docs.microsoft.com/en-us/dotnet/framework/migration-guide/how-to-determine-which-versions-are-installed
+As of 2022-10-10 versions up to .NET 4.8.1 are supported/detected. It's based on the information in this article: https://docs.microsoft.com/en-us/dotnet/framework/migration-guide/how-to-determine-which-versions-are-installed
 
 Blog documentation (duplicating it here is tedious): https://www.powershelladmin.com/wiki/List_installed_.NET_versions_on_remote_computers 
 
