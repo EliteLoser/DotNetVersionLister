@@ -40,6 +40,8 @@ function Get-STDotNetVersion {
         Uses remote registry access or PSRemoting.
         
         GitHub here: https://github.com/EliteLoser/DotNetVersionLister
+
+        PowerShell Gallery link here: https://www.powershellgallery.com/packages/DotNetVersionLister
         
         Online blog documentation here:
         https://www.powershelladmin.com/wiki/List_installed_.NET_versions_on_remote_computers
