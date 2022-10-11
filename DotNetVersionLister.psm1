@@ -23,7 +23,8 @@ function Get-DotNet4xVersion {
         [int]$BestMatchBuild = $VersionTable.Keys -le $BuildNumber | Measure-Object -Maximum | Select-Object -ExpandProperty Maximum
         if ($BestMatchBuild -eq 0) {
             "Build number less than .NET Framework 4.5"
-        } else {
+        }
+        else {
             "{0}+" -f $VersionTable[$BestMatchBuild]
         }
     }
@@ -35,15 +36,20 @@ function Get-STDotNetVersion {
     .SYNOPSIS
         Get installed .NET versions from the local host or remote computers. Hardcoded .NET versions,
         so the script will need to be updated when new versions are released.
-                
+        
     .DESCRIPTION
         Uses remote registry access or PSRemoting.
-    
+        
         GitHub here: https://github.com/EliteLoser/DotNetVersionLister
 
+        PowerShell Gallery link here: https://www.powershellgallery.com/packages/DotNetVersionLister
+        
         Online blog documentation here:
         https://www.powershelladmin.com/wiki/List_installed_.NET_versions_on_remote_computers
         
+        Microsoft link to documentation the script is based on:
+        https://docs.microsoft.com/en-us/dotnet/framework/migration-guide/how-to-determine-which-versions-are-installed
+
     .PARAMETER ComputerName
         Target computers to retrieve .NET versions from via remote registry access or PSRemoting.
     
@@ -115,17 +121,24 @@ function Get-STDotNetVersion {
         [Switch] $LocalHost = $True, # tacking/hacking on this too
         [Switch] $Clobber,
         [PSCredential] $Credential)
+    
     ## Author: Joakim Svendsen
     ## Copyright (C) 2011, Joakim Svendsen
     ## All rights reserved.
-    ## BSD 3-clause license
+    ## MIT license
+    
+    # https://docs.microsoft.com/en-us/dotnet/framework/migration-guide/how-to-determine-which-versions-are-installed
+    # Old link: https://msdn.microsoft.com/en-us/library/hh925568 - for release numbers
+            
     # 2016-01-13: v1.2 - Added support for .NET 4.6.1.
     # 2016-05-29: v1.3 - Code quality improvements, standardization.
-    # 2016-10-10: v1.4 - Added support for .NET 4.6.2.
+    # 2016-10-10: v1.4 - Added support for .NET 4.6.2. (Rewrote parts earlier).
     # 2017-02-06: v1.5 - Making it a function and module, and more standards-compliant (return objects).
     #                    Adding the parameters -ExportToCSV, -PSRemoting, -ContinueOnPingFail and -NoSummary.
     #                    Lots of small changes and improvements. Properly closing and disposing registry objects.
     #                    Added a [gc]::Collect() in the end block.
+    # 2017-02-11: Rewriting to use OpenRemoteBaseKey() with PSRemoting as well. Some other changes/improvements.
+    #             Removing some redundant code after changes.
     # 2017-04-20: v1.6 - Removed the Dispose() calls that caused errors.
     # ----- forgot to comment ---
     # 2018-12-26: v2.2.6 - Up to .NET 4.7.2 is supported in this version. The change is making the -LocalHost
@@ -138,15 +151,13 @@ function Get-STDotNetVersion {
     #       to keep it backwards compatible, I will add some quite offensive logic to alias this to
     #       "Get-DotNetVersion", but only if the command does not already exist in the session.
     #       Fingers crossed I get the logic right on the first try this time, I promise to test. :)
-
+    # 2022-10-07: v3.1.0 - Refactored >=4.x section, introducing Get-DotNet4xVersion helper function and adding
+    #             support for known frameworks up to 4.8.1. (Thanks for the "external help" here).
+    # 2022-10-11: v3.1.3 - Polishing and fixing stuff. Updating documentation.
     Begin {
-        
         #Set-StrictMode -Version Latest
-        
         $MyEAP = 'Stop'
-        
         $ErrorActionPreference = $MyEAP
-        
         $StartTime = Get-Date
         
         if ($ComputerName.Count -gt 0 -and $LocalHost) {
@@ -245,16 +256,8 @@ function Get-STDotNetVersion {
                     Add-Member -Name $VerString -Value 'Not installed (no key)' -MemberType NoteProperty -InputObject $DotNetData.$Computer
                 }
             }
-            # https://msdn.microsoft.com/en-us/library/hh925568 - for release numbers
-            # 2022-10-07: Refactored >=4.x section, introducing Get-DotNet4xVersion helper function and adding support for known frameworks up to 4.8.1
-            # 2016-01-13: Adding 4.6.1.
-            # 2016-10-10: Added 4.6.2. (rewrote parts earlier).
-            # 2017-02-06: Changing to a switch statement as part of rewriting to a module/function and adding features.
-            # 2017-02-11: Rewriting to use OpenRemoteBaseKey() with PSRemoting as well. Some other changes/improvements.
-            #             Removing some redundant code after changes.
             if ($RegKey) {
                 $RegKey.Close()
-                #$RegKey.Dispose()
             }
             $RegKey = $null
             if ($RegKey = $Registry.OpenSubKey("SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full")) {
@@ -271,15 +274,14 @@ function Get-STDotNetVersion {
             }
             if ($RegKey) {
                 $RegKey.Close()
-                #$RegKey.Dispose()
             }
             if ($Registry) {
                 $Registry.Close()
-                #$Registry.Dispose()
             }
             $RegKey, $Registry = $null, $null
             if ($PSRemoting) {
-                $DotNetData.$Computer # return this to the calling scope, populate the other data hash there, pretty hacky, this
+                # Return this to the calling scope, populate the other data hash there, pretty hacky, this.
+                $DotNetData.$Computer
             }
         }
     }
@@ -304,7 +306,7 @@ function Get-STDotNetVersion {
                     $Computer | Add-Content $OutputOfflineFile
                 }
                 if (-not $ContinueOnPingFail) {
-                    $DotNetData.$Computer | Add-Member -Name Error -Value "No ping reply" -MemberType NoteProperty
+                    $DotNetData.$Computer | Add-Member -MemberType NoteProperty -Name Error -Value "No ping reply"
                     Write-Warning -Message "${Computer} is offline (no ping reply)."
                     continue
                 }
@@ -321,7 +323,8 @@ function Get-STDotNetVersion {
                     if ($Credential) {
                         $PSRSplat.Credential = $Credential
                     }
-                    $DotNetData.$Computer = Invoke-Command @PSRSplat #-ComputerName $Computer -ScriptBlock (Get-Item function:\SetDataHashObject).ScriptBlock `
+                    $DotNetData.$Computer = Invoke-Command @PSRSplat
+                    #-ComputerName $Computer -ScriptBlock (Get-Item function:\SetDataHashObject).ScriptBlock `
                         #-ArgumentList $Computer, $true -ErrorAction Stop
                     # -Verbose:$(if ($VerbosePreference -match 'Stop|Continue') { $true } else { $false })
                 }
@@ -343,13 +346,13 @@ function Get-STDotNetVersion {
         $DotNetData.GetEnumerator() | Sort-Object -Property Name | ForEach-Object {
             $c = $_.Name
             $_.Value | Select-Object -Property $CsvHeaders
-        } | Select-Object @{ Name = 'ComputerName'; Expression = { $c } }, * # pass to pipeline instead 
+        } | Select-Object @{Name = 'ComputerName'; Expression = {$c}}, * # pass to pipeline instead 
         #| Export-Csv -Encoding UTF8 -LiteralPath $CsvOutputFile
         if ($ExportToCSV) {
             $DotNetData.GetEnumerator() | Sort-Object -Property Name | ForEach-Object {
                 $c = $_.Name
                 $_.Value | Select-Object -Property $CsvHeaders
-            } | Select-Object @{ Name = 'ComputerName'; Expression ={ $c } }, * | Export-Csv -Encoding UTF8 -LiteralPath $CsvOutputFile
+            } | Select-Object @{Name = 'ComputerName'; Expression ={$c}}, * | Export-Csv -Encoding UTF8 -LiteralPath $CsvOutputFile
         }
         [gc]::Collect()
         if (-not $NoSummary) {
