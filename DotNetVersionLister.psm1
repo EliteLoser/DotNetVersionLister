@@ -150,7 +150,9 @@ function Get-STDotNetVersion {
     #       to keep it backwards compatible, I will add some quite offensive logic to alias this to
     #       "Get-DotNetVersion", but only if the command does not already exist in the session.
     #       Fingers crossed I get the logic right on the first try this time, I promise to test. :)
-
+    # 2022-10-07: v3.1.0 - Refactored >=4.x section, introducing Get-DotNet4xVersion helper function and adding
+    #             support for known frameworks up to 4.8.1. (Thanks for the "external help" here).
+    # 2022-10-11: v3.1.3 - Polishing and fixing stuff. Updating documentation.
     Begin {
         #Set-StrictMode -Version Latest
         $MyEAP = 'Stop'
