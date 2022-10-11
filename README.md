@@ -10,6 +10,8 @@ It's published to the PowerShell Gallery, so you can install/inspect/download wi
 # New feature in October 2022
 Obs. As of 2022-10-11, I have not yet published the 3.1.x updates to the PowerShell Gallery. Thought maybe I would wait to see if there is any feedback (doubtful). In version 3.1.0 and up of the module, the build number is presented with a "+" trailing the version if it is not an exact match for a specific .NET Framework version. This increases the precision of the script as it formerly did not distinguish a higher build than the exact .NET Framework version.
 
+# Installation and use
+
 Example installation for your user only:
 
 ```
