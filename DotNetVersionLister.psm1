@@ -23,7 +23,8 @@ function Get-DotNet4xVersion {
         [int]$BestMatchBuild = $VersionTable.Keys -le $BuildNumber | Measure-Object -Maximum | Select-Object -ExpandProperty Maximum
         if ($BestMatchBuild -eq 0) {
             "Build number less than .NET Framework 4.5"
-        } else {
+        }
+        else {
             "{0}+" -f $VersionTable[$BestMatchBuild]
         }
     }
