@@ -215,75 +215,112 @@ function Get-STDotNetVersion {
                 [string] $Computer,
                 [bool] $PSRemoting,
                 [bool] $LocalHost,
-                [string[]] $DotNetVersionStrings = @("v4\Client", "v4\Full", "v3.5", "v3.0", "v2.0.50727", "v1.1.4322"))
-            if ($PSRemoting) {
-                $DotNetData = @{}
-                $DotNetData.$Computer = New-Object -TypeName PSObject -Property @{
-                    ComputerName = $Computer
-                }
-            }
-            $DotNetRegistryBase   = 'SOFTWARE\Microsoft\NET Framework Setup\NDP'
-            $ErrorActionPreference = 'Stop'
-            $RegSuccess = $false
-            try {
-                if ($PSRemoting -or $LocalHost) {
-                    # Open local registry
-                    $Registry = [Microsoft.Win32.RegistryKey]::OpenRemoteBaseKey('LocalMachine', [string]::Empty)
-                    $RegSuccess = $?
-                }
-                else {
-                    $Registry = [Microsoft.Win32.RegistryKey]::OpenRemoteBaseKey('LocalMachine', $Computer)
-                    $RegSuccess = $?
-                }
-            }
-            catch {
-                Write-Warning -Message "${Computer}: Unable to open $(if (-not $PSremoting) { 'remote ' })registry: $_"
-                $DotNetData.$Computer | Add-Member -Name Error -Value "Unable to open remote registry: $_" -MemberType NoteProperty
-                return $DotNetData.$Computer
-            }
-            $ErrorActionPreference = 'Continue'
-            Write-Verbose -Message "${Computer}: Successfully connected to registry."
-            foreach ($VerString in $DotNetVersionStrings) {
-                if ($RegKey = $Registry.OpenSubKey("$DotNetRegistryBase\$VerString")) {
-                    if ($RegKey.GetValue('Install') -eq '1') {
-                        Add-Member -Name $VerString -Value 'Installed' -MemberType NoteProperty -InputObject $DotNetData.$Computer
+                [string[]] $DotNetVersionStrings = @("v4\Client", "v4\Full", "v3.5", "v3.0", "v2.0.50727", "v1.1.4322")
+            )
+            begin {
+                function Get-DotNet4xVersion {
+                    param (
+                        [int]$BuildNumber
+                    )
+                    $VersionTable = @{
+                        378389	 = '4.5'		
+                        378675	 = '4.5.1'	
+                        379893	 = '4.5.2'	
+                        393295	 = '4.6'	
+                        394254	 = '4.6.1'	
+                        394802	 = '4.6.2'	
+                        460798	 = '4.7'	
+                        461308	 = '4.7.1'	
+                        461808	 = '4.7.2'	
+                        528040	 = '4.8'		
+                        533320	 = '4.8.1'	
+                    }
+
+                    if ($VersionTable.Keys -contains $BuildNumber) { 
+                            $VersionTable[$BuildNumber]
                     }
                     else {
-                        Add-Member -Name $VerString -Value 'Not installed' -MemberType NoteProperty -InputObject $DotNetData.$Computer
+                        [int]$BestMatchBuild = $VersionTable.Keys -le $BuildNumber | Measure-Object -Maximum | Select-Object -ExpandProperty Maximum
+                        if ($BestMatchBuild -eq 0) {
+                            "Build number less than .NET Framework 4.5"
+                        }
+                        else {
+                            "{0}+" -f $VersionTable[$BestMatchBuild]
+                        }
+                    }
+                }
+            }
+            process {
+                if ($PSRemoting) {
+                    $DotNetData = @{}
+                    $DotNetData.$Computer = New-Object -TypeName PSObject -Property @{
+                        ComputerName = $Computer
+                    }
+                }
+                $DotNetRegistryBase   = 'SOFTWARE\Microsoft\NET Framework Setup\NDP'
+                $ErrorActionPreference = 'Stop'
+                $RegSuccess = $false
+                try {
+                    if ($PSRemoting -or $LocalHost) {
+                        # Open local registry
+                        $Registry = [Microsoft.Win32.RegistryKey]::OpenRemoteBaseKey('LocalMachine', [string]::Empty)
+                        $RegSuccess = $?
+                    }
+                    else {
+                        $Registry = [Microsoft.Win32.RegistryKey]::OpenRemoteBaseKey('LocalMachine', $Computer)
+                        $RegSuccess = $?
+                    }
+                }
+                catch {
+                    Write-Warning -Message "${Computer}: Unable to open $(if (-not $PSremoting) { 'remote ' })registry: $_"
+                    $DotNetData.$Computer | Add-Member -Name Error -Value "Unable to open remote registry: $_" -MemberType NoteProperty
+                    return $DotNetData.$Computer
+                }
+                $ErrorActionPreference = 'Continue'
+                Write-Verbose -Message "${Computer}: Successfully connected to registry."
+                foreach ($VerString in $DotNetVersionStrings) {
+                    if ($RegKey = $Registry.OpenSubKey("$DotNetRegistryBase\$VerString")) {
+                        if ($RegKey.GetValue('Install') -eq '1') {
+                            Add-Member -Name $VerString -Value 'Installed' -MemberType NoteProperty -InputObject $DotNetData.$Computer
+                        }
+                        else {
+                            Add-Member -Name $VerString -Value 'Not installed' -MemberType NoteProperty -InputObject $DotNetData.$Computer
+                        }
+                    }
+                    else {
+                        Add-Member -Name $VerString -Value 'Not installed (no key)' -MemberType NoteProperty -InputObject $DotNetData.$Computer
+                    }
+                }
+                if ($RegKey) {
+                    $RegKey.Close()
+                }
+                $RegKey = $null
+                if ($RegKey = $Registry.OpenSubKey("SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full")) {
+                    if ($DotNet4xRelease = [int] $RegKey.GetValue('Release')) {
+                        $DotNet4XName = Get-DotNet4xVersion -BuildNumber $DotNet4xRelease
+                        $DotNetData.$Computer | Add-Member -MemberType NoteProperty -Name '>=4.x' -Value $DotNet4XName
+                    }
+                    else {
+                        $DotNetData.$Computer | Add-Member -MemberType NoteProperty -Name '>=4.x' -Value "Error (no 'Release' key?)"
                     }
                 }
                 else {
-                    Add-Member -Name $VerString -Value 'Not installed (no key)' -MemberType NoteProperty -InputObject $DotNetData.$Computer
+                    $DotNetData.$Computer | Add-Member -MemberType NoteProperty -Name '>=4.x' -Value 'Not installed (no key)'
                 }
-            }
-            if ($RegKey) {
-                $RegKey.Close()
-            }
-            $RegKey = $null
-            if ($RegKey = $Registry.OpenSubKey("SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full")) {
-                if ($DotNet4xRelease = [int] $RegKey.GetValue('Release')) {
-                        $DotNet4XName = Get-DotNet4xVersion -BuildNumber $DotNet4xRelease
-                        $DotNetData.$Computer | Add-Member -MemberType NoteProperty -Name '>=4.x' -Value $DotNet4XName
+                if ($RegKey) {
+                    $RegKey.Close()
                 }
-                else {
-                    $DotNetData.$Computer | Add-Member -MemberType NoteProperty -Name '>=4.x' -Value "Error (no 'Release' key?)"
+                if ($Registry) {
+                    $Registry.Close()
                 }
-            }
-            else {
-                $DotNetData.$Computer | Add-Member -MemberType NoteProperty -Name '>=4.x' -Value 'Not installed (no key)'
-            }
-            if ($RegKey) {
-                $RegKey.Close()
-            }
-            if ($Registry) {
-                $Registry.Close()
-            }
-            $RegKey, $Registry = $null, $null
-            if ($PSRemoting) {
-                # Return this to the calling scope, populate the other data hash there, pretty hacky, this.
-                $DotNetData.$Computer
+                $RegKey, $Registry = $null, $null
+                if ($PSRemoting) {
+                    # Return this to the calling scope, populate the other data hash there, pretty hacky, this.
+                    $DotNetData.$Computer
+                }
             }
         }
+
     }
     process {
         foreach ($Computer in $ComputerName) {
