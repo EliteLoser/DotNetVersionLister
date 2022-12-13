@@ -12,7 +12,7 @@
 RootModule = 'DotNetVersionLister.psm1'
 
 # Version number of this module.
-ModuleVersion = '3.1.3'
+ModuleVersion = '3.1.4'
 
 # Supported PSEditions
 # CompatiblePSEditions = @()
@@ -107,9 +107,7 @@ PrivateData = @{
         # IconUri = ''
 
         # ReleaseNotes of this module
-        ReleaseNotes = '* Add detection of .NET version 4.8.1
- * Refactored code.
- * Now a trailing "+" after the version number indicates it''s a higher build number than the exact version.'
+        ReleaseNotes = '* Make -PSRemoting work again.'
         
         # External dependent modules of this module
         # ExternalModuleDependencies = ''
