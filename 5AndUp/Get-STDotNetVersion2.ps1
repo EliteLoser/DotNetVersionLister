@@ -22,6 +22,8 @@ function Get-STDotNetVersion2 {
         Computer names to scan for .NET 5+ versions.
     .PARAMETER Credential
         Alternate credentials for the PSRemoting.
+    .PARAMETER DotNetExePath
+        Custom dotnet.exe path. Default: 'C:\Program Files\dotnet\dotnet.exe'.
     #>
     [CmdletBinding()]
     Param(
