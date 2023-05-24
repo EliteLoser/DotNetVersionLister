@@ -40,7 +40,7 @@ function Get-STDotNetVersion2 {
         $InnerComputerName = @()
     }
     Process {
-        # I want all of the collected for one call to Invoke-Command rather
+        # I want all of the computers collected for one call to Invoke-Command rather
         # than multiple, so therefore, if people pipe in computer names,
         # I collect them in an array and run the code in the end block.
         # The Process{} block's "$ComputerName" will be one single string/object
