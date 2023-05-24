@@ -100,7 +100,7 @@ function Get-STDotNetVersion2 {
             }
             $ErrorActionPreference = 'Continue'
         } # End of script block to run on remote computers to rather simply gather and structure data into objects
-        # from parsed dotnet.exe output (has to be in $Env:Path or you must modify).
+        # from parsed dotnet.exe output (you can pass in a non-default path with -DotNetExePath <your_path>).
 
         $PSRSplat = @{
             ComputerName = $InnerComputerName
