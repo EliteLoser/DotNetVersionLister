@@ -8,8 +8,8 @@ Usage:
 > $Results
 ```  
 
-NB. If you want to merge these results with the Get-STDotNetVersion/DotNetVersionLister results, you can use Merge-Csv:
-https://github.com/EliteLoser/MergeCsv 
+NB. If you want to merge these results with the Get-STDotNetVersion/DotNetVersionLister results, you can use Merge-Csv with the 
+-AllowDuplicates switch: https://github.com/EliteLoser/MergeCsv 
 
 Example (censored). Only one SDK, and some runtimes. In the script's default output you will have a ComputerName property
 that is the remote computer's `$Env:ComputerName` variable and also a PSComputerName property from PowerShell (in version
