@@ -30,10 +30,10 @@ function Get-STDotNetVersion2 {
         [Parameter(Mandatory,ValueFromPipeline,ValueFromPipelineByPropertyName)]
         [Alias('Cn', 'PSComputerName', 'Name')]
         [String[]]$ComputerName,
-        
         [PSCredential]$Credential,
-
-        [String]$DotNetExePath = 'C:\Program Files\dotnet\dotnet.exe'
+        [String]$DotNetExePath = 'C:\Program Files\dotnet\dotnet.exe',
+        [Switch]$NoFallbackToSearchForDotNetExePath,
+        [String[]]$DotNetExeFallbackSearchDrives = @('C:', 'D:')
     )
 
     Begin {
@@ -52,9 +52,34 @@ function Get-STDotNetVersion2 {
     End {
         $ScriptBlock = {
             Param(
-                [String]$DotNetExePath
+                [String]$DotNetExePath,
+                [Bool]$NoFallbackToSearchForDotNetExePath,
+                [String[]]$SearchDrives
             )
             $ErrorActionPreference = 'Stop'
+            if (-not (Test-Path -LiteralPath $DotNetExePath)) {
+                if ($NoFallbackToSearchForDotNetExePath) {
+                    Write-Error ("[$Env:ComputerName] Did not find dotnet.exe in path '$DotNetExePath'. " + `
+                        "Consider omitting -NoFallbackToSearchForDotNetExePath and possibly using " + `
+                        "-DotNetExeFallbackSearchDrives (default is C: and D:, and it stops when one is found)") `
+                        -ErrorAction Stop
+                }
+                else {
+                    Write-Verbose -Verbose ("Did not find dotnet.exe in path '$DotNetExePath'. " + `
+                        "Falling back to searching through drives $($SearchDrives -join ', ')")
+                    foreach ($Drive in $SearchDrives) {
+                        $DotNetExePath = Get-ChildItem -LiteralPath "$Drive\dotnet.exe" -Recurse -Force -ErrorAction SilentlyContinue |
+                            Select-Object -ExpandProperty FullName -First 1
+                        if (Test-Path -LiteralPath $DotNetExePath) {
+                            Write-Verbose -Verbose "Found dotnet.exe in path '$DotNetExePath'."
+                            break
+                        }
+                    }
+                    if (-not (Test-Path -LiteralPath $DotNetExePath)) {
+                        Write-Error "Searched, but did not find dotnet.exe in any of the following drives $($SearchDrives -join ', ')" -ErrorAction Stop
+                    }
+                }
+            }
             # SDK section.
             try {
                 foreach ($SDK in & $DotNetExePath --list-sdks) {
@@ -118,4 +143,3 @@ function Get-STDotNetVersion2 {
     } # End of advanced function End block.
 
 } # End of function.
-
