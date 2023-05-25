@@ -3,7 +3,9 @@
 Usage:
 
 ``` 
-> . D:\temp\Get-STDotNetVersion2.ps1
+> Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/EliteLoser/DotNetVersionLister/master/5AndUp/Get-STDotNetVersion2.ps1' -OutFile Get-STDotNetVersion2.psm1
+> Import-Module -Name ./Get-STDotNetVersion2.psm1    
+> # . D:\temp\Get-STDotNetVersion2.ps1
 > $Results = Get-STDotNetVersion2 -ComputerName $ArrayOfComputers
 > $Results
 ```  
