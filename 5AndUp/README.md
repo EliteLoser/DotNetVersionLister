@@ -3,11 +3,11 @@
 Usage:
 
 ``` 
-> Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/EliteLoser/DotNetVersionLister/master/5AndUp/Get-STDotNetVersion2.ps1' -OutFile Get-STDotNetVersion2.psm1
-> Import-Module -Name ./Get-STDotNetVersion2.psm1    
-> # . D:\temp\Get-STDotNetVersion2.ps1
-> $Results = Get-STDotNetVersion2 -ComputerName $ArrayOfComputers
-> $Results
+Invoke-WebRequest -OutFile Get-STDotNetVersion2.psm1 -Uri 'https://raw.githubusercontent.com/EliteLoser/DotNetVersionLister/master/5AndUp/Get-STDotNetVersion2.ps1'
+Import-Module -Name ./Get-STDotNetVersion2.psm1    
+# . D:\temp\Get-STDotNetVersion2.ps1
+$Results = Get-STDotNetVersion2 -ComputerName $ArrayOfComputers
+$Results
 ```  
 
 NB. If you want to merge these results with the Get-STDotNetVersion/DotNetVersionLister results, you can use Merge-Csv with the 
