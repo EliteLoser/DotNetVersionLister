@@ -24,6 +24,15 @@ function Get-STDotNetVersion2 {
         Alternate credentials for the PSRemoting.
     .PARAMETER DotNetExePath
         Custom dotnet.exe path. Default: 'C:\Program Files\dotnet\dotnet.exe'.
+    .PARAMETER NoFallbackToSearchForDotNetExePath
+        Do not fall back to searching for dotnet.exe if it is not found in the
+        default location (customizable with -DotNetExePath). Default drives to
+        search are C: and D:. Use -DotNetExeFallbackSearchDrives X:, Y:, Z:
+        to specify your own drives.
+    .PARAMETER DotNetExeFallbackSearchDrives
+        Drives to search for dotnet.exe if it is not found in the standard location
+        (customizable with -DotNetExePath). Default is C:, D:. It will stop as soon
+        as one is found.
     #>
     [CmdletBinding()]
     Param(
@@ -58,7 +67,7 @@ function Get-STDotNetVersion2 {
             )
             $ErrorActionPreference = 'Stop'
             if (-not (Test-Path -LiteralPath $DotNetExePath)) {
-                if ($NoFallbackToSearchForDotNetExePath) {
+                if ($True -eq $NoFallbackToSearchForDotNetExePath) {
                     Write-Error ("[$Env:ComputerName] Did not find dotnet.exe in path '$DotNetExePath'. " + `
                         "Consider omitting -NoFallbackToSearchForDotNetExePath and possibly using " + `
                         "-DotNetExeFallbackSearchDrives (default is C: and D:, and it stops when one is found)") `
@@ -130,7 +139,7 @@ function Get-STDotNetVersion2 {
         $PSRSplat = @{
             ComputerName = $InnerComputerName
             ScriptBlock = $ScriptBlock
-            ArgumentList = $DotNetExePath
+            ArgumentList = $DotNetExePath, $NoFallbackToSearchForDotNetExePath, $DotNetExeFallbackSearchDrives
         }
 
         if ($Credential.Username -match '\S') {
