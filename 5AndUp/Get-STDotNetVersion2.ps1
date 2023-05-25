@@ -45,7 +45,7 @@ function Get-STDotNetVersion2 {
         # I collect them in an array and run the code in the end block.
         # The Process{} block's "$ComputerName" will be one single string/object
         # for each pipeline element, or if they are passed as an argument, it will
-        # simply append the (possibly one-element) array to the inner array.
+        # simply append the (possibly one-element) array to the (then empty) inner array.
         $InnerComputerName += $ComputerName
     }
 
