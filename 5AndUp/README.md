@@ -11,7 +11,7 @@ $Results
 ```  
 
 NB. If you want to merge these results with the Get-STDotNetVersion/DotNetVersionLister results, you can use Merge-Csv with the 
--AllowDuplicates switch: https://github.com/EliteLoser/MergeCsv 
+-AllowDuplicates switch: https://github.com/EliteLoser/MergeCsv (`Install-Module -Scope CurrentUser -Name MergeCsv #-Force`).
 
 Example (censored). Only one SDK, and some runtimes. In the script's default output you will have a ComputerName property
 that is the remote computer's `$Env:ComputerName` variable and also a PSComputerName property from PowerShell (in version
