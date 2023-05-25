@@ -78,7 +78,7 @@ function Get-STDotNetVersion2 {
                         "Falling back to searching through drives $($SearchDrives -join ', ')")
                     foreach ($Drive in $SearchDrives) {
                         $DotNetExePath = Get-ChildItem -LiteralPath "$Drive\dotnet.exe" -Recurse -Force -ErrorAction SilentlyContinue |
-                            Select-Object -ExpandProperty FullName -First 1
+                            Select-Object -ExpandProperty FullName -First 1 -ErrorAction SilentlyContinue
                         if (Test-Path -LiteralPath $DotNetExePath) {
                             Write-Verbose -Verbose "Found dotnet.exe in path '$DotNetExePath'."
                             break
