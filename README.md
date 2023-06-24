@@ -55,3 +55,5 @@ Error        :
 # Notes
 
 The command/function name used to be `Get-DotNetVersion` in versions before v3 of the module. This is aliased if the command does not currently exist in the PowerShell session, but you have to either run `Get-STDotNetVersion` first to load it, as auto-load for `Get-DotNetVersion` does not work - or you can simply `Import-Module -Name DotNetVersionLister` first, as we had to on PowerShell v2.
+
+See https://github.com/EliteLoser/DotNetVersionLister/tree/master/5AndUp for .NET 5 and up (SDK and Runtime).
