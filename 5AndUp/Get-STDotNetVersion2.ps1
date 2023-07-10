@@ -16,7 +16,7 @@ function Get-STDotNetVersion2 {
         against only a couple of computers. But should mostly work. You are welcome
         to provide feedback or suggest changes on GitHub.
 
-        See https://github.com/EliteLoser/DotNetVersionLister
+        See https://github.com/EliteLoser/DotNetVersionLister/blob/master/5AndUp
 
     .PARAMETER ComputerName
         Computer names to scan for .NET 5+ versions.
