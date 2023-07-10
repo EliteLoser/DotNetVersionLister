@@ -7,6 +7,8 @@ Invoke-WebRequest -OutFile Get-STDotNetVersion2.psm1 -Uri 'https://raw.githubuse
 Import-Module -Name ./Get-STDotNetVersion2.psm1    
 # . D:\temp\Get-STDotNetVersion2.ps1
 $Results = Get-STDotNetVersion2 -ComputerName $ArrayOfComputers
+$SDKs = $Results | Where-Object {$_.SDKVersion}
+$Runtimes = $Results | Where-Object {$_.RuntimeType}
 $Results
 ```  
 
