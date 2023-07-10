@@ -55,6 +55,11 @@ function Get-STDotNetVersion2 {
                 [String]$DotNetExePath
             )
             $ErrorActionPreference = 'Stop'
+            # Return a warning if the executable doesn't exist.
+            if (-not (Test-Path -LiteralPath $DotNetExePath -PathType Leaf)) {
+                Write-Warning "[$Env:ComputerName] Path to dotnet.exe doesn't exist ($DotNetExePath). Cannot continue with this computer."
+                return
+            }
             # SDK section.
             try {
                 foreach ($SDK in & $DotNetExePath --list-sdks) {
