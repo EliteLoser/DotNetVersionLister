@@ -3,7 +3,12 @@ function Get-STDotNetVersion2 {
     <#
     .SYNOPSIS
         Get .NET versions parsed from the "dotnet.exe --list-runtimes" and
-        "dotnet.exe --list-sdks" output, as invoked via PSRemoting/WinRM.
+        "dotnet.exe --list-sdks" output, either as invoked via PSRemoting/WinRM
+        or on the local host/system/computer.
+
+        If you supply one or more computer names with the -ComputerName parameter,
+        PowerShell remoting/WinRM will be used. If you supply no computer names,
+        the local host/computer is checked.
 
         This is for .NET 5 and above. For retrieving .NET Framework versions,
         see https://github.com/EliteLoser/DotNetVersionLister (versions 1-4.x).
@@ -27,15 +32,17 @@ function Get-STDotNetVersion2 {
     #>
     [CmdletBinding()]
     Param(
-        [Parameter(Mandatory,ValueFromPipeline,ValueFromPipelineByPropertyName)]
+        [Parameter(ValueFromPipeline,ValueFromPipelineByPropertyName)]
         [Alias('Cn', 'PSComputerName', 'Name')]
-        [String[]]$ComputerName,
-        
+        [AllowEmptyCollection()]
+        [AllowEmptyString()]
+        [AllowNull()]
+        [String[]]$ComputerName = @(),
         [PSCredential]$Credential,
+        [String]$DotNetExePath = 'C:\Program Files\dotnet\dotnet.exe' #,
+        #[Bool]$LocalHost = $True
 
-        [String]$DotNetExePath = 'C:\Program Files\dotnet\dotnet.exe'
     )
-
     Begin {
         $InnerComputerName = @()
     }
@@ -45,24 +52,21 @@ function Get-STDotNetVersion2 {
         # I collect them in an array and run the code in the end block.
         # The Process{} block's "$ComputerName" will be one single string/object
         # for each pipeline element, or if they are passed as an argument, it will
-        # simply append the (possibly one-element) array to the (then empty) inner array.
+        # simply append the (possibly one-element) array to the (then empty) inner array,
+        # effectively forming a new array or replacing the empty array with itself.
         $InnerComputerName += $ComputerName
     }
-
     End {
-        $ScriptBlock = {
-            Param(
-                [String]$DotNetExePath
-            )
+        $InnerScriptBlock = {
             $ErrorActionPreference = 'Stop'
             # Return a warning if the executable doesn't exist.
-            if (-not (Test-Path -LiteralPath $DotNetExePath -PathType Leaf)) {
+            if (-not (Test-Path -LiteralPath $InnerDotNetExePath -PathType Leaf)) {
                 Write-Warning "[$Env:ComputerName] Path to dotnet.exe doesn't exist ($DotNetExePath). Cannot continue with this computer."
                 return
             }
             # SDK section.
             try {
-                foreach ($SDK in & $DotNetExePath --list-sdks) {
+                foreach ($SDK in & $InnerDotNetExePath --list-sdks) {
                     if ($SDK -match '^(?<Version>[\d.]+)\s+\[(?<Path>.+)\]\s*$') {
                         # Not [PSCustomObject] for PSv2 compatibility...
                         New-Object -TypeName PSObject -Property @{
@@ -73,17 +77,17 @@ function Get-STDotNetVersion2 {
                         # The Select-Object above is for PSv2 quirks mode to include all properties for all objects.
                     }
                     else {
-                        Write-Warning "[$Env:ComputerName] Unrecognized output from 'dotnet.exe --list-sdks'. Output was '$SDK'."
+                        Write-Warning "[$Env:ComputerName] Unrecognized output from '$InnerDotNetExePath --list-sdks'. Output was '$SDK'."
                     }
                 }
             
             }
             catch {
-                Write-Warning "[$Env:ComputerName] Failed to execute 'dotnet.exe --list-sdks'. Error was '$_'"
+                Write-Warning "[$Env:ComputerName] Failed to execute '$InnerDotNetExePath --list-sdks'. Error was '$_'"
             }
             # Runtime section.
             try {
-                foreach ($Runtime in & $DotNetExePath --list-runtimes) {
+                foreach ($Runtime in & $InnerDotNetExePath --list-runtimes) {
                     if ($Runtime -match '^(?<RuntimeType>\S+)\s+(?<Version>[\d.]+)\s+\[(?<Path>.+)\]\s*$') {
                         # Not [PSCustomObject] for PSv2 compatibility...
                         New-Object -TypeName PSObject -Property @{
@@ -95,32 +99,41 @@ function Get-STDotNetVersion2 {
                         # The Select-Object above is for PSv2 quirks mode to include all properties for all objects.
                     }
                     else {
-                        Write-Warning "[$Env:ComputerName] Unrecognized output from 'dotnet.exe --list-runtimes'. Output was '$Runtime'."
+                        Write-Warning "[$Env:ComputerName] Unrecognized output from '$InnerDotNetExePath --list-runtimes'. Output was '$Runtime'."
                     }
                 }
             
             }
             catch {
-                Write-Warning "[$Env:ComputerName] Failed to execute 'dotnet.exe --list-runtimes'. Error was '$_'"
+                Write-Warning "[$Env:ComputerName] Failed to execute '$InnerDotNetExePath --list-runtimes'. Error was '$_'"
             }
             $ErrorActionPreference = 'Continue'
-        } # End of script block to run on remote computers to rather simply gather and structure data into objects
+        }
+        # End of inner script block to run on remote computers to rather simply gather and structure data into objects
         # from parsed dotnet.exe output (you can pass in a non-default path with -DotNetExePath <your_path>).
-
-        $PSRSplat = @{
-            ComputerName = $InnerComputerName
-            ScriptBlock = $ScriptBlock
-            ArgumentList = $DotNetExePath
+        # The below is a hack to avoid code duplication and a way to handle creating a script block with the
+        # value of a variable in the script ($DotNetExePath).
+        $ScriptBlockToHandleDotNetExePath = [ScriptBlock]::Create(@"
+        Param([String]`$InnerDotNetExePath = "$DotNetExePath")
+        $InnerScriptBlock
+"@      )
+        if ($InnerComputerName.Count -gt 0) {
+            Write-Verbose -Message "Computer names piped in or specified via parameter, using WinRM."
+            $PSRSplat = @{
+                ComputerName = $InnerComputerName
+                ScriptBlock = $ScriptBlockToHandleDotNetExePath
+                ArgumentList = $DotNetExePath
+            }
+            if ($Credential.Username -match '\S') {
+                $PSRSplat['Credential'] = $Credential
+            }
+            $Results = Invoke-Command @PSRSplat
+            $Results
         }
-
-        if ($Credential.Username -match '\S') {
-            $PSRSplat['Credential'] = $Credential
+        else {
+            Write-Verbose -Message "No computer names piped in or specified via parameter, checking local host."
+            $Results = & $ScriptBlockToHandleDotNetExePath
+            $Results
         }
-
-        $Results = Invoke-Command @PSRSplat
-        $Results
-    
     } # End of advanced function End block.
-
 } # End of function.
-
