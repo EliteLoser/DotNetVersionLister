@@ -11,10 +11,18 @@ $SDKs = $Results | Where-Object {$_.SDKVersion}
 $Runtimes = $Results | Where-Object {$_.RuntimeType}
 $Results
 ```  
+# Get The Local Computer's .NET 5+ SDK And Runtime Versions
+
+```
+$Results = Get-STDotNetVersion2
+$SDKs = $Results | Where-Object {$_.SDKVersion}
+$Runtimes = $Results | Where-Object {$_.RuntimeType}
+$Results
+``` 
 
 NB. If you want to merge these results with the Get-STDotNetVersion/DotNetVersionLister results, you can use Merge-Csv with the 
 -AllowDuplicates switch: https://github.com/EliteLoser/MergeCsv (`Install-Module -Scope CurrentUser -Name MergeCsv #-Force`). 
-Despite the function name Merge-Csv, it handles custom PowerShell objects directly as well.
+Despite the function name Merge-Csv, it handles custom PowerShell objects directly as well. It won't be perfect, though, but "works". :)
 
 Example (censored). Only one SDK, and some runtimes. In the script's default output you will have a ComputerName property
 that is the remote computer's `$Env:ComputerName` variable and also a PSComputerName property from PowerShell (in version
