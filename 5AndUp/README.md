@@ -1,6 +1,6 @@
 # Get Remote Computers' .NET 5+ SDK And Runtime Versions
 
-This requires that WSMan/WinRM/PowerShell Remoting is set up in the environment as it uses Invoke-Command.
+This requires that WSMan/WinRM/PowerShell Remoting is set up in the environment, as it uses Invoke-Command.
 
 Usage:
 
@@ -29,7 +29,7 @@ NB. If you want to merge these results with the Get-STDotNetVersion/DotNetVersio
 -AllowDuplicates switch: https://github.com/EliteLoser/MergeCsv (`Install-Module -Scope CurrentUser -Name MergeCsv #-Force`). 
 Despite the function name Merge-Csv, it handles custom PowerShell objects directly as well. It won't be perfect, though, but "works". :)
 
-Example (censored). Only one SDK, and some runtimes. In the script's default output you will have a ComputerName property
+Example (censored). Only one SDK and some runtimes. In the script's default output you will have a ComputerName property
 that is the remote computer's `$Env:ComputerName` variable and also a PSComputerName property from PowerShell (in version
 3 and up) that is the computer name passed in to Invoke-Command, plus a runspace ID (by default). I filtered these out here
 for privacy reasons.
