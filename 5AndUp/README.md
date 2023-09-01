@@ -1,6 +1,6 @@
 # Get Remote Computers' .NET 5+ SDK And Runtime Versions
 
-This requires that WSMan/WinRM/PowerShell Remoting is set up in the environment.
+This requires that WSMan/WinRM/PowerShell Remoting is set up in the environment as it uses Invoke-Command.
 
 Usage:
 
