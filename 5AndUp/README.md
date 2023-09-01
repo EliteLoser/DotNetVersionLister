@@ -14,6 +14,9 @@ $Results
 # Get The Local Computer's .NET 5+ SDK And Runtime Versions
 
 ```
+Invoke-WebRequest -OutFile Get-STDotNetVersion2.psm1 -Uri 'https://raw.githubusercontent.com/EliteLoser/DotNetVersionLister/master/5AndUp/Get-STDotNetVersion2.ps1'
+Import-Module -Name ./Get-STDotNetVersion2.psm1    
+# . D:\temp\Get-STDotNetVersion2.ps1
 $Results = Get-STDotNetVersion2
 $SDKs = $Results | Where-Object {$_.SDKVersion}
 $Runtimes = $Results | Where-Object {$_.RuntimeType}
