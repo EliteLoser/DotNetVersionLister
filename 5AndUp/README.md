@@ -1,4 +1,4 @@
-# Get Remote Computer's .NET 5+ SDK And Runtime Versions
+# Get Remote Computers' .NET 5+ SDK And Runtime Versions
 
 This requires that WSMan/WinRM/PowerShell Remoting is set up in the environment.
 
