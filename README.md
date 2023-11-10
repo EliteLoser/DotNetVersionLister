@@ -3,7 +3,7 @@ Get a list of installed .NET Framework versions on (remote) Windows computers.
 
 As of 2022-10-10 versions up to .NET 4.8.1 are supported/detected. It's based on the information in this article: https://docs.microsoft.com/en-us/dotnet/framework/migration-guide/how-to-determine-which-versions-are-installed
 
-Blog documentation (duplicating it here is tedious): https://www.powershelladmin.com/wiki/List_installed_.NET_versions_on_remote_computers 
+Blog documentation, parts outdated (duplicating (or fixing) it (t)here is tedious): https://www.powershelladmin.com/wiki/List_installed_.NET_versions_on_remote_computers 
 
 It's published to the PowerShell Gallery, so you can install/inspect/download with `Install-Module`, `Find-Module` and `Save-Module`. Link: https://www.powershellgallery.com/packages/DotNetVersionLister/ 
 
